@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { Search, ArrowUpDown } from 'lucide-react';
-import { fetchProducts } from '../services/api';
+import { fetchProducts, type Product } from '../services/api';
 import { ProductCard, ProductSkeleton } from '../components/ProductCard';
 import { useDebounce } from '../hooks/useDebounce';
 
@@ -13,9 +13,9 @@ export const Route = createFileRoute('/')({
 export function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('none');
-  const debouncedSearch = useDebounce(searchTerm, 300);
+  const debouncedSearch = useDebounce<string>(searchTerm, 300);
 
-  const { data: products, isLoading, isError } = useQuery({
+  const { data: products, isLoading, isError } = useQuery<Product[], Error>({
     queryKey: ['products'],
     queryFn: fetchProducts,
   });
@@ -63,14 +63,14 @@ export function Dashboard() {
                placeholder="Search by title..." 
                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
                value={searchTerm}
-               onChange={(e) => setSearchTerm(e.target.value)}
+               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
              />
           </div>
           <div className="relative min-w-[200px]">
             <select
               className="w-full appearance-none pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm cursor-pointer"
               value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortOption(e.target.value)}
             >
               <option value="none">Sort by...</option>
               <option value="price-asc">Price: Low to High</option>

@@ -24,6 +24,8 @@ const formSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
+type FormData = z.infer<typeof formSchema>;
+
 export const Route = createFileRoute('/form')({
   component: ValidatedForm,
 });
@@ -37,12 +39,12 @@ export function ValidatedForm() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: 'onChange', // Validates on change and blur for real-time inline errors
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FormData) => {
     setIsSubmittingForm(true);
     // Simulate an API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
