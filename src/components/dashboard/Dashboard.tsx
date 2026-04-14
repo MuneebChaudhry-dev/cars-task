@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts, type Product } from '../../services/api';
 import { useDebounce } from '../../hooks/useDebounce';
+import { Navbar } from '../Navbar';
 import { SearchInput } from './SearchInput';
 import { SortSelect } from './SortSelect';
 import { LoadingGrid } from './LoadingGrid';
@@ -40,31 +41,48 @@ export function Dashboard() {
 
   if (isError) {
     return (
-      <div className="p-8 text-red-500 text-center font-semibold mt-10">
-        Error fetching products. Please try again later.
+      <div className="min-h-screen bg-slate-50">
+        <Navbar />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center p-8 bg-red-50 border border-red-200 rounded-2xl">
+            <p className="text-red-600 font-semibold text-lg">Failed to load products</p>
+            <p className="text-red-400 text-sm mt-1">Please check your connection and try again.</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-500 pl-3">
-          Products
-        </h1>
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <SearchInput value={searchTerm} onChange={setSearchTerm} />
-          <SortSelect value={sortOption} onChange={setSortOption} />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+      <Navbar />
+
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <h1 className="text-3xl font-bold tracking-tight mb-1">Vehicle Listings</h1>
+          <p className="text-blue-200 text-sm">
+            {isLoading ? 'Loading inventory...' : `${filteredAndSortedProducts.length} vehicle${filteredAndSortedProducts.length !== 1 ? 's' : ''} available`}
+          </p>
+
+          {/* Filters inline in header */}
+          <div className="flex flex-col sm:flex-row gap-3 mt-6">
+            <SearchInput value={searchTerm} onChange={setSearchTerm} variant="hero" />
+            <SortSelect value={sortOption} onChange={setSortOption} variant="hero" />
+          </div>
         </div>
       </div>
 
-      {isLoading ? (
-        <LoadingGrid />
-      ) : filteredAndSortedProducts.length === 0 ? (
-        <EmptyState />
-      ) : (
-        <ProductGrid products={filteredAndSortedProducts} />
-      )}
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {isLoading ? (
+          <LoadingGrid />
+        ) : filteredAndSortedProducts.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <ProductGrid products={filteredAndSortedProducts} />
+        )}
+      </div>
     </div>
   );
 }
